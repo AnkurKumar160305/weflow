@@ -1,0 +1,272 @@
+type WorkspaceMember = 
+ record {
+   joinedAt: Timestamp;
+   role: MemberRole;
+   userId: UserId;
+ };
+type WorkspaceId = nat;
+type Workspace = 
+ record {
+   createdAt: Timestamp;
+   id: WorkspaceId;
+   logoUrl: text;
+   name: text;
+   ownerId: UserId;
+   tagline: text;
+ };
+type UserProfilePublic = 
+ record {
+   avatarUrl: text;
+   bio: text;
+   createdAt: Timestamp;
+   department: text;
+   id: UserId;
+   name: text;
+   onboardingComplete: bool;
+   title: text;
+ };
+type UserId = principal;
+type UpdateTaskArgs = 
+ record {
+   assigneeId: opt UserId;
+   blockerReason: text;
+   bucketId: opt BucketId;
+   columnId: Column;
+   department: opt Department;
+   description: text;
+   dueDate: opt Timestamp;
+   order: nat;
+   priority: Priority;
+   sprintId: opt SprintId;
+   status: TaskStatus;
+   title: text;
+ };
+type UpdateSprintArgs = 
+ record {
+   endDate: Timestamp;
+   goal: text;
+   name: text;
+   startDate: Timestamp;
+   status: SprintStatus;
+ };
+type UpdateProfileArgs = 
+ record {
+   avatarUrl: text;
+   bio: text;
+   department: text;
+   name: text;
+   onboardingComplete: bool;
+   title: text;
+ };
+type UpdateMilestoneArgs = 
+ record {
+   endDate: Timestamp;
+   name: text;
+   startDate: Timestamp;
+ };
+type UpdateBucketArgs = 
+ record {
+   color: text;
+   name: text;
+ };
+type Timestamp = int;
+type TaskStatus = 
+ variant {
+   Blocked;
+   Completed;
+   InProgress;
+   Open;
+ };
+type TaskPublic = 
+ record {
+   assigneeId: opt UserId;
+   blockerReason: text;
+   bucketId: opt BucketId;
+   columnId: Column;
+   createdAt: Timestamp;
+   department: opt Department;
+   description: text;
+   dueDate: opt Timestamp;
+   id: TaskId;
+   order: nat;
+   priority: Priority;
+   sprintId: opt SprintId;
+   status: TaskStatus;
+   title: text;
+   workspaceId: WorkspaceId;
+ };
+type TaskId = nat;
+type TaskBucketPublic = 
+ record {
+   color: text;
+   createdAt: Timestamp;
+   id: BucketId;
+   name: text;
+   workspaceId: WorkspaceId;
+ };
+type SprintTemplate = 
+ variant {
+   FourSprints;
+   TwoSprints;
+ };
+type SprintStatus = 
+ variant {
+   Active;
+   Completed;
+   Planned;
+ };
+type SprintPublic = 
+ record {
+   createdAt: Timestamp;
+   endDate: Timestamp;
+   goal: text;
+   id: SprintId;
+   name: text;
+   startDate: Timestamp;
+   status: SprintStatus;
+   workspaceId: WorkspaceId;
+ };
+type SprintId = nat;
+type Priority = 
+ variant {
+   Critical;
+   High;
+   Low;
+   Medium;
+ };
+type MoveTaskArgs = 
+ record {
+   blockerReason: text;
+   newColumn: Column;
+   newOrder: nat;
+   taskId: TaskId;
+ };
+type MilestonePublic = 
+ record {
+   createdAt: Timestamp;
+   createdBy: UserId;
+   endDate: Timestamp;
+   id: MilestoneId;
+   name: text;
+   startDate: Timestamp;
+   workspaceId: WorkspaceId;
+ };
+type MilestoneId = nat;
+type MemberRole = 
+ variant {
+   Admin;
+   CoCreator;
+   Lead;
+   Member;
+ };
+type Department = 
+ variant {
+   Design;
+   Engineering;
+   Management;
+   Marketing;
+   Operations;
+ };
+type CreateWorkspaceArgs = 
+ record {
+   logoUrl: text;
+   name: text;
+   tagline: text;
+ };
+type CreateTaskArgs = 
+ record {
+   assigneeId: opt UserId;
+   bucketId: opt BucketId;
+   columnId: Column;
+   department: opt Department;
+   description: text;
+   dueDate: opt Timestamp;
+   order: nat;
+   priority: Priority;
+   sprintId: opt SprintId;
+   title: text;
+   workspaceId: WorkspaceId;
+ };
+type CreateSprintArgs = 
+ record {
+   endDate: Timestamp;
+   goal: text;
+   name: text;
+   startDate: Timestamp;
+   workspaceId: WorkspaceId;
+ };
+type CreateMilestoneArgs = 
+ record {
+   endDate: Timestamp;
+   name: text;
+   startDate: Timestamp;
+   template: SprintTemplate;
+   workspaceId: WorkspaceId;
+ };
+type CreateBucketArgs = 
+ record {
+   color: text;
+   name: text;
+   workspaceId: WorkspaceId;
+ };
+type Column = 
+ variant {
+   Blocked;
+   Doing;
+   Done;
+   Todo;
+ };
+type BucketId = nat;
+service : {
+  completeOnboarding: () -> ();
+  createBucket: (args: CreateBucketArgs) -> (TaskBucketPublic);
+  createMilestone: (args: CreateMilestoneArgs) -> (MilestonePublic);
+  createOrUpdateProfile: (args: UpdateProfileArgs) -> (UserProfilePublic);
+  createSprint: (args: CreateSprintArgs) -> (SprintPublic);
+  createTask: (args: CreateTaskArgs) -> (TaskPublic);
+  createWorkspace: (args: CreateWorkspaceArgs) -> (Workspace);
+  deleteBucket: (bucketId: BucketId) -> ();
+  deleteMilestone: (milestoneId: MilestoneId) -> ();
+  deleteSprint: (sprintId: SprintId) -> ();
+  deleteTask: (taskId: TaskId) -> ();
+  getActiveSprint: (workspaceId: WorkspaceId) -> (opt SprintPublic) query;
+  getBucket: (bucketId: BucketId) -> (opt TaskBucketPublic) query;
+  getMilestone: (milestoneId: MilestoneId) -> (opt MilestonePublic) query;
+  getMyProfile: () -> (opt UserProfilePublic);
+  getMyWorkspaces: () -> (vec Workspace) query;
+  getProfile: (userId: UserId) -> (opt UserProfilePublic) query;
+  getSprint: (sprintId: SprintId) -> (opt SprintPublic) query;
+  getSprintInviteLink: (sprintId: SprintId) -> (text);
+  getSprintInviteLinkQuery: (sprintId: SprintId) -> (opt text) query;
+  getTask: (taskId: TaskId) -> (opt TaskPublic) query;
+  getWorkspace: (workspaceId: WorkspaceId) -> (opt Workspace) query;
+  getWorkspaceOwner: (workspaceId: WorkspaceId) -> (opt UserId) query;
+  initSampleData: () -> ();
+  inviteMember: (workspaceId: WorkspaceId, userId: UserId, role:
+   MemberRole) -> ();
+  isWorkspaceCreator: (workspaceId: WorkspaceId) -> (bool) query;
+  listBuckets: (workspaceId: WorkspaceId) -> (vec TaskBucketPublic) query;
+  listMembers: (workspaceId: WorkspaceId) -> (vec WorkspaceMember) query;
+  listMilestones: (workspaceId: WorkspaceId) -> (vec MilestonePublic) query;
+  listSprints: (workspaceId: WorkspaceId) -> (vec SprintPublic) query;
+  listTasksByAssignee: (workspaceId: WorkspaceId, assigneeId: UserId) ->
+   (vec TaskPublic) query;
+  listTasksByColumn: (workspaceId: WorkspaceId, column: Column) ->
+   (vec TaskPublic) query;
+  listTasksBySprint: (workspaceId: WorkspaceId, sprintId: SprintId) ->
+   (vec TaskPublic) query;
+  moveTask: (args: MoveTaskArgs) -> (TaskPublic);
+  registerProfile: () -> (UserProfilePublic);
+  removeMember: (workspaceId: WorkspaceId, userId: UserId) -> ();
+  setSprintStatus: (sprintId: SprintId, status: SprintStatus) ->
+   (SprintPublic);
+  updateBucket: (bucketId: BucketId, args: UpdateBucketArgs) ->
+   (TaskBucketPublic);
+  updateMemberRole: (workspaceId: WorkspaceId, userId: UserId, newRole:
+   MemberRole) -> ();
+  updateMilestone: (milestoneId: MilestoneId, args: UpdateMilestoneArgs) ->
+   (MilestonePublic);
+  updateSprint: (sprintId: SprintId, args: UpdateSprintArgs) ->
+   (SprintPublic);
+  updateTask: (taskId: TaskId, args: UpdateTaskArgs) -> (TaskPublic);
+}

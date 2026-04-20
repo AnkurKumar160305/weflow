@@ -1,0 +1,159 @@
+// Version: 1.0.0
+type BucketId__627403465 = Nat;
+type Column__532975302 = {#Blocked; #Doing; #Done; #Todo};
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type Department__500022216 =
+  {#Design; #Engineering; #Management; #Marketing; #Operations};
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type List__415060402<T> = List__790383201<T>;
+type List__790383201<T> =
+  {
+    var blockIndex : Nat__490723111;
+    var blocks : [var [var ?T]];
+    var elementIndex : Nat__490723111
+  };
+type MemberRole__360152667 = {#Admin; #CoCreator; #Lead; #Member};
+type MilestoneId__189280684 = Nat;
+type Milestone__652957039 =
+  {
+    createdAt : Timestamp__301639476;
+    createdBy : UserId__158757552;
+    var endDate : Timestamp__301639476;
+    id : MilestoneId__189280684;
+    var name : Text;
+    var startDate : Timestamp__301639476;
+    workspaceId : WorkspaceId__377827389
+  };
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type Priority__941055612 = {#Critical; #High; #Low; #Medium};
+type SprintId__383768785 = Nat;
+type SprintStatus__440398787 = {#Active; #Completed; #Planned};
+type Sprint__913099077 =
+  {
+    createdAt : Timestamp__301639476;
+    var endDate : Timestamp__301639476;
+    var goal : Text;
+    id : SprintId__383768785;
+    var name : Text;
+    var startDate : Timestamp__301639476;
+    var status : SprintStatus__440398787;
+    workspaceId : WorkspaceId__377827389
+  };
+type TaskBucket__146063037 =
+  {
+    var color : Text;
+    createdAt : Timestamp__301639476;
+    id : BucketId__627403465;
+    var name : Text;
+    workspaceId : WorkspaceId__377827389
+  };
+type TaskId__207642484 = Nat;
+type TaskStatus__520503765 = {#Blocked; #Completed; #InProgress; #Open};
+type Task__218109324 =
+  {
+    var assigneeId : ?UserId__158757552;
+    var blockerReason : Text;
+    var bucketId : ?BucketId__627403465;
+    var columnId : Column__532975302;
+    createdAt : Timestamp__301639476;
+    var department : ?Department__500022216;
+    var description : Text;
+    var dueDate : ?Timestamp__301639476;
+    id : TaskId__207642484;
+    var order : Nat;
+    var priority : Priority__941055612;
+    var sprintId : ?SprintId__383768785;
+    var status : TaskStatus__520503765;
+    var title : Text;
+    workspaceId : WorkspaceId__377827389
+  };
+type Timestamp__301639476 = Int;
+type UserId__158757552 = Principal;
+type UserProfile__244945094 =
+  {
+    var avatarUrl : Text;
+    var bio : Text;
+    createdAt : Timestamp__301639476;
+    var department : Text;
+    id : UserId__158757552;
+    var name : Text;
+    var onboardingComplete : Bool;
+    var title : Text
+  };
+type WorkspaceId__377827389 = Nat;
+type WorkspaceMember__545567312 =
+  {
+    joinedAt : Timestamp__301639476;
+    role : MemberRole__360152667;
+    userId : UserId__158757552
+  };
+type Workspace__405571195 =
+  {
+    createdAt : Timestamp__301639476;
+    id : WorkspaceId__377827389;
+    logoUrl : Text;
+    name : Text;
+    ownerId : UserId__158757552;
+    tagline : Text
+  };
+actor {
+  stable buckets :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?TaskBucket__146063037]];
+      var elementIndex : Nat__490723111
+    };
+  stable inviteLinks :
+    {
+      var root : Node__46230540<SprintId__383768785, Text>;
+      var size : Nat__490723111
+    };
+  stable milestones :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Milestone__652957039]];
+      var elementIndex : Nat__490723111
+    };
+  stable nextBucketId : [var Nat];
+  stable nextMilestoneId : [var Nat];
+  stable nextSprintId : [var Nat];
+  stable nextTaskId : [var Nat];
+  stable nextWorkspaceId : [var Nat];
+  stable profiles :
+    {
+      var root : Node__46230540<UserId__158757552, UserProfile__244945094>;
+      var size : Nat__490723111
+    };
+  stable var sampleDataInitialized : Bool;
+  stable sprints :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Sprint__913099077]];
+      var elementIndex : Nat__490723111
+    };
+  stable tasks :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Task__218109324]];
+      var elementIndex : Nat__490723111
+    };
+  stable workspaceMembers :
+    {
+      var root :
+        Node__46230540<WorkspaceId__377827389,
+                        List__415060402<WorkspaceMember__545567312>>;
+      var size : Nat__490723111
+    };
+  stable workspaces :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Workspace__405571195]];
+      var elementIndex : Nat__490723111
+    }
+};
